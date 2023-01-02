@@ -2,13 +2,13 @@
 
 pragma solidity ^0.8.15;
 
-import './Feedbase.sol';
+import "./Feedbase.sol";
 
 contract Medianizer {
-    address   public owner;
-    uint256   public quorum;
+    address public owner;
+    uint256 public quorum;
     address[] public sources;
-    Feedbase  public feedbase;
+    Feedbase public feedbase;
 
     constructor(address fb) {
         owner = msg.sender;
@@ -16,17 +16,17 @@ contract Medianizer {
     }
 
     function setOwner(address newOwner) public {
-        require(msg.sender == owner, 'ERR_OWNER');
+        require(msg.sender == owner, "ERR_OWNER");
         owner = newOwner;
     }
 
     function setSources(address[] calldata newSources) public {
-        require(msg.sender == owner, 'ERR_OWNER');
+        require(msg.sender == owner, "ERR_OWNER");
         sources = newSources;
     }
 
-    function setQuorum(uint newQuorum) public {
-        require(msg.sender == owner, 'ERR_OWNER');
+    function setQuorum(uint256 newQuorum) public {
+        require(msg.sender == owner, "ERR_OWNER");
         quorum = newQuorum;
     }
 
@@ -35,7 +35,7 @@ contract Medianizer {
         uint256 minttl = type(uint256).max;
         uint256 count = 0;
 
-        for(uint256 i = 0; i < sources.length; i++) {
+        for (uint256 i = 0; i < sources.length; i++) {
             (bytes32 val, uint256 _ttl) = feedbase.pull(sources[i], tag);
             if (block.timestamp > _ttl) {
                 continue;
@@ -47,14 +47,14 @@ contract Medianizer {
                 while (val >= data[j]) {
                     j++;
                 }
-                for(uint256 k = count; k > j; k--) {
+                for (uint256 k = count; k > j; k--) {
                     data[k] = data[k - 1];
                 }
                 data[j] = val;
             }
             count++;
         }
-        require(count > 0, 'ERR_COUNT');
+        require(count > 0, "ERR_COUNT");
 
         bytes32 median;
         if (count % 2 == 0) {
